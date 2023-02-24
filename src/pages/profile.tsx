@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import type { SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import SelectUSState from 'react-select-us-states';
+import { useState } from 'react';
 
 type profileFields = {
   fullName: string;
