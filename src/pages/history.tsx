@@ -44,7 +44,7 @@ const History = () => {
       sortType: "basic"
     },
     {
-      Header: "Total Amound Due",
+      Header: "Total Amount Due",
       accessor: "totalAmountDue",
       sortType: "basic"
     }
