@@ -7,10 +7,11 @@ type loginFields = {
   confirm_password: string
 };
 
-const Login = () => {
+const Register = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<loginFields>();
   const onSubmit: SubmitHandler<loginFields> = (data, event) => {
@@ -54,15 +55,19 @@ const Login = () => {
                 <div className="mt-1">
                   <input
                     id="email"
+                    placeholder = "johndoe@email.com"
                     type="email"
                     autoComplete="email"
-                    required
                     {...register("username_email", {
                       required: true,
-                      pattern: /^\S+@\S+$/i,
+                      pattern: { 
+                        value: /^\S+@\S+$/i,
+                        message: "Enter a valid Email Address"
+                      }
                     })}
                     className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
                   />
+                  {errors.username_email && <p className="text-red-500">{errors.username_email.message}</p>}
                 </div>
               </div>
               <div className="mt-6">
@@ -77,14 +82,19 @@ const Login = () => {
                     id="password"
                     type="password"
                     autoComplete="current-password"
-                    {...register("password", { required: true })}
+                    {...register("password", { required: true,
+                    minLength: {
+                      value: 8,
+                      message: "Password must have at least 8 characters"
+                    } })}
                     className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
                   />
+                  {errors.password && <p className="text-red-500">{errors.password.message}</p>}
                 </div>
               </div>
               <div className="mt-6">
                 <label
-                  htmlFor="password"
+                  htmlFor="confirm_password"
                   className="block text-sm font-medium text-gray-100"
                 >
                   Confirm Password
@@ -94,9 +104,13 @@ const Login = () => {
                     id="confirm_password"
                     type="password"
                     autoComplete="current-password"
-                    {...register("confirm_password", { required: true })}
+                    {...register("confirm_password", { required: true,
+                      validate: value =>
+                      watch('password') === value || "Your passwords do no match"
+                    })}
                     className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
                   />
+                  {errors.confirm_password && <p className="text-red-500">{errors.confirm_password.message}</p>}
                 </div>
               </div>
             </div>
@@ -116,4 +130,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
