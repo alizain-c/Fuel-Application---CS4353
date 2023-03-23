@@ -1,5 +1,7 @@
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 type loginFields = {
   email: string;
@@ -7,22 +9,53 @@ type loginFields = {
 };
 
 const Login = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<loginFields>();
-  const onSubmit: SubmitHandler<loginFields> = (data, event) => {
+  const { data: session } = useSession();
+
+  if (!session) {
+    console.log("No session exists");
+  }
+
+  if (session) {
+    console.log("Session exists");
+    void router.push("/quote");
+  }
+
+  const onSubmit: SubmitHandler<loginFields> = async (data, event) => {
     event?.preventDefault();
-    console.log(data);
+
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: data.email,
+      password: data.password,
+      callbackUrl: "/",
+    });
+
+    if (!res) {
+      console.log("Failed Response");
+      return;
+    }
+
+    if (res.error) {
+      console.log(`Response Error: ${res.error}`);
+      return;
+    }
+
+    console.log("Response Success");
+    void router.push("/quote");
   };
 
   if (errors.email) {
-    console.log("email error");
+    console.log("Email validation error");
   }
 
   if (errors.password) {
-    console.log("password error");
+    console.log("Password validation error");
   }
 
   return (
