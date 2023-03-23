@@ -2,6 +2,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Navigation from "../components/navigation";
 
 type loginFields = {
   email: string;
@@ -59,6 +60,8 @@ const Login = () => {
   }
 
   return (
+  <div>
+    <Navigation/>
     <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-900 py-2 sm:px-6 lg:px-8">
       <div className="w-full max-w-md rounded-md bg-neutral-900 px-4 py-8 shadow-md sm:px-10">
         <div>
@@ -124,6 +127,7 @@ const Login = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 

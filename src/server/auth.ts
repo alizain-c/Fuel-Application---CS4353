@@ -10,6 +10,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { env } from "../env/server.mjs";
 // import { prisma } from "./db";
 
+// EXAMPLE HARD-CODED DATABASE:
 const example = {
   id: "1",
   email: "test@test.com",

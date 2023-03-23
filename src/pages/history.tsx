@@ -1,5 +1,7 @@
 import React from "react";
 import { useTable, useSortBy } from "react-table";
+import Navigation from "../components/navigation";
+
 
 const History = () => {
   const data = [
@@ -66,6 +68,8 @@ const History = () => {
     );
 
     return (
+      <div>
+      <Navigation/>
       <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-900 py-2 sm:px-6 lg:px-8">
         <div className="w-full max-w-8xl rounded-md bg-neutral-900 px-4 py-8 shadow-md sm:px-10">
           <div>
@@ -108,7 +112,7 @@ const History = () => {
           </div>
         </div>
       </div>
-
+    </div>
     );
   };
 
