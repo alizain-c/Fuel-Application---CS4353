@@ -4,10 +4,17 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+// import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
+// import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../env/server.mjs";
-import { prisma } from "./db";
+// import { prisma } from "./db";
+
+const example = {
+  id: "1",
+  email: "test@test.com",
+  password: "123",
+};
 
 /**
  * Module augmentation for `next-auth` types
@@ -18,7 +25,7 @@ import { prisma } from "./db";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      id: string;
+      // id: string;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -39,18 +46,19 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, user }) {
       if (session.user) {
-        session.user.id = user.id;
+        // session.user.id = user.id;
+        // session.user.email = user.email;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
     },
   },
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
+    // DiscordProvider({
+    //   clientId: env.DISCORD_CLIENT_ID,
+    //   clientSecret: env.DISCORD_CLIENT_SECRET,
+    // }),
     /**
      * ...add more providers here
      *
@@ -60,7 +68,35 @@ export const authOptions: NextAuthOptions = {
      * NextAuth.js docs for the provider you want to use. Example:
      * @see https://next-auth.js.org/providers/github
      **/
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text", placeholder: "jsmith" },
+        password: { label: "Password", type: "password" },
+      },
+      authorize(credentials) {
+        const payload = {
+          email: credentials?.email,
+          password: credentials?.password,
+        };
+
+        if (
+          payload.email === example.email &&
+          payload.password === example.password
+        ) {
+          console.log("CredentialsProvider success");
+          return {
+            id: example.id,
+            email: example.email,
+          };
+        } else {
+          console.log("CredentialsProvider failed");
+          return null;
+        }
+      },
+    }),
   ],
+  secret: env.NEXTAUTH_SECRET,
 };
 
 /**
