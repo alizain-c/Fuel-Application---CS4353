@@ -22,14 +22,6 @@ const Quote = () => {
     formState: { errors },
   } = useForm<QuoteFields>();
   const [deliveryDate, setDeliveryDate] = useState(new Date());
-  const { data: session } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!session) {
-      void router.push("/login");
-    }
-  }, [router, session]);
 
   const onSubmit: SubmitHandler<QuoteFields> = (data, event) => {
     event?.preventDefault();

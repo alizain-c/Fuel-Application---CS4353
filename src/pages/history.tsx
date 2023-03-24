@@ -164,15 +164,6 @@ const History = () => {
         useSortBy
       );
 
-    const { data: session } = useSession();
-    const router = useRouter();
-
-    useEffect(() => {
-      if (!session) {
-        void router.push("/login");
-      }
-    }, [router, session]);
-
     return (
       <div>
         <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-900 py-2 sm:px-6 lg:px-8">

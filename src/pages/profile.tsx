@@ -17,14 +17,6 @@ const ProfileManagement = () => {
   const { register, handleSubmit } = useForm<profileFields>();
 
   const [selectedState, setSelectedState] = useState("");
-  const { data: session } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!session) {
-      void router.push("/login");
-    }
-  }, [router, session]);
 
   const onSubmit: SubmitHandler<profileFields> = (data, event) => {
     event?.preventDefault();
