@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Navigation from "../components/navigation";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import quotes from "../server/hist"
 
 type QuoteFields = {
   gallonsRequested: number;
@@ -26,6 +27,14 @@ const Quote = () => {
   const onSubmit: SubmitHandler<QuoteFields> = (data, event) => {
     event?.preventDefault();
     console.log(data);
+    quotes.push({
+      gallonsRequested: data.gallonsRequested,
+      deliveryAddress: data.deliveryAddress,
+      deliveryDate: "example",
+      suggestedPrice: data.suggestedPrice,
+      totalAmountDue: data.totalAmountDue,
+    })
+    console.log(quotes[quotes.length-1]);
   };
 
   return (
