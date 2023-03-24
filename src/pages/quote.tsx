@@ -1,7 +1,6 @@
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { useEffect, useState } from "react";
 import Navigation from "../components/navigation";
 import { useSession } from "next-auth/react";
