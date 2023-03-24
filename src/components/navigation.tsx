@@ -14,6 +14,11 @@ const Navigation = () => {
       </Link>
       <nav>
         <ul className="flex space-x-7">
+          <li>
+            <span className="border-r-2 pr-7 italic text-amber-500">
+              {session?.user?.email}
+            </span>
+          </li>
           {session ? (
             <li>
               <p
