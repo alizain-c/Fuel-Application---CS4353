@@ -53,9 +53,9 @@ const Home: NextPage = () => {
         </div>
       </main>
 
-      <footer className="py-4 px-8 text-center">
+      {/* <footer className="py-4 px-8 text-center">
         <p>&copy; 2023 OpenFuel. All rights reserved.</p>
-      </footer>
+      </footer> */}
     </>
   );
 };

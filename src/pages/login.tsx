@@ -2,6 +2,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import React from 'react';
 import Navigation from "../components/navigation";
 
 type loginFields = {
@@ -24,7 +25,7 @@ const Login = () => {
 
   if (session) {
     console.log("Session exists");
-    void router.push("/quote");
+    void router.push("/protectedLogin");
   }
 
   const onSubmit: SubmitHandler<loginFields> = async (data, event) => {
@@ -48,7 +49,7 @@ const Login = () => {
     }
 
     console.log("Response Success");
-    void router.push("/quote");
+    void router.push("protectedLogin");
   };
 
   if (errors.email) {

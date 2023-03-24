@@ -103,8 +103,6 @@ const Quote = () => {
                   <input
                     id="suggestedPrice"
                     type="number"
-                    readOnly
-                    value="0.00"
                     {...register("suggestedPrice", {
                       required: true,
                     })}
@@ -124,8 +122,6 @@ const Quote = () => {
                     id="totalAmountDue"
                     type="number"
                     required
-                    readOnly
-                    value="0.00"
                     {...register("totalAmountDue", {
                       required: true,
                     })}
