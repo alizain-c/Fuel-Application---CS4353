@@ -24,7 +24,7 @@ const ProfileManagement = () => {
     console.log({...data, state: selectedState});
   };
 
-  const setNewValue = (value) => {
+  const setNewValue = (value: string) => {
     setSelectedState(value);
   };
 
@@ -51,7 +51,7 @@ const ProfileManagement = () => {
                 <div className="mt-1">
                   <input
                     id="fullName"
-                    maxLength="50"
+                    maxLength={50}
                     required
                     {...register("fullName", {
                       required: true,
@@ -69,7 +69,7 @@ const ProfileManagement = () => {
                 <div className="mt-1">
                   <input
                     id="address1"
-                    maxLength="100"
+                    maxLength={100}
                     required
                     {...register("address1", {
                       required: true,
@@ -87,7 +87,7 @@ const ProfileManagement = () => {
                 <div className="mt-1">
                   <input
                     id="address2"
-                    maxLength="100"
+                    maxLength={100}
                     {...register("address2", {
                       
                     })}
@@ -104,7 +104,7 @@ const ProfileManagement = () => {
                 <div className="mt-1">
                   <input
                     id="city"
-                    maxLength="100"
+                    maxLength={100}
                     required
                     {...register("city", {
                       required: true,
@@ -136,8 +136,8 @@ const ProfileManagement = () => {
                 <div className="mt-1">
                   <input
                     id="zipcode"
-                    maxLength="9"
-                    minLength="5"
+                    maxLength={9}
+                    minLength={5}
                     pattern="[0-9]*"
                     required
                     {...register("zipcode", {
