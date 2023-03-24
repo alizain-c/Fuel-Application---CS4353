@@ -4,6 +4,7 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
+import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 // import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../env/server.mjs";
@@ -22,20 +23,20 @@ const example = {
  * and keep type safety
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  **/
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      // id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
-  }
+// declare module "next-auth" {
+//   interface Session extends DefaultSession {
+//     user: {
+//       // id: string;
+//       // ...other properties
+//       // role: UserRole;
+//     } & DefaultSession["user"];
+//   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
-}
+//   // interface User {
+//   //   // ...other properties
+//   //   // role: UserRole;
+//   // }
+// }
 
 /**
  * Options for NextAuth.js used to configure
@@ -43,70 +44,69 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  **/
 export const authOptions: NextAuthOptions = {
-  callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        // session.user.id = user.id;
-        // session.user.email = user.email;
-        // session.user.role = user.role; <-- put other properties on the session here
-      }
-      return session;
-    },
-  },
-  // adapter: PrismaAdapter(prisma),
   providers: [
-    /**
-     * ...add more providers here
-     *
-     * Most other providers require a bit more work than the Discord provider.
-     * For example, the GitHub provider requires you to add the
-     * `refresh_token_expires_in` field to the Account model. Refer to the
-     * NextAuth.js docs for the provider you want to use. Example:
-     * @see https://next-auth.js.org/providers/github
-     **/
     CredentialsProvider({
-      name: "Credentials",
+      id: "credentials",
+
+      name: "credentials",
+
       credentials: {
         email: {
-          label: "Email",
-          type: "text",
-          placeholder: "johndoe@mail.com",
+          label: "Email Address",
+          type: "email",
+          placeholder: "john.doe@example.com",
         },
-        password: { label: "Password", type: "password" },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Your super secure password",
+        },
       },
-      authorize(credentials) {
-        const payload = {
-          email: credentials?.email,
-          password: credentials?.password,
-        };
 
-        if (
-          payload.email === example.email &&
-          payload.password === example.password
-        ) {
-          console.log("CredentialsProvider success");
+      authorize: (credentials) => {
+        try {
+          if (!credentials) {
+            throw Error("Missing email and password");
+          }
+
+          const user = example;
+
+          if (!user || !user?.password) {
+            throw Error("Invalid email or password.");
+          }
+
+          const isValidEmail = credentials.email === user.email;
+          const isValidPassword = credentials.password === user.password;
+
+          if (!isValidPassword || !isValidEmail) {
+            throw Error("Invalid email or password.");
+          }
+
           return {
-            id: example.id,
-            email: example.email,
+            id: user.id,
+            email: user.email,
           };
-        } else {
-          console.log("CredentialsProvider failed");
-          return null;
+        } catch (error) {
+          console.log("SIGN IN EROR", error);
+          throw error;
         }
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+    maxAge: 1 * 1 * 60 * 60,
+  },
   secret: env.NEXTAUTH_SECRET,
 };
 
-/**
- * Wrapper for getServerSession so that you don't need
- * to import the authOptions in every file.
- * @see https://next-auth.js.org/configuration/nextjs
- **/
-export const getServerAuthSession = (ctx: {
+export const getServerAuthSession = async (ctx: {
   req: GetServerSidePropsContext["req"];
   res: GetServerSidePropsContext["res"];
 }) => {
-  return getServerSession(ctx.req, ctx.res, authOptions);
+  const session = await getServerSession(ctx.req, ctx.res, authOptions);
+  const token = await getToken({ req: ctx.req });
+
+  console.log("SESSION:", session, "TOKEN:", token);
+  return session;
 };
