@@ -2,8 +2,6 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import React from 'react';
-import Navigation from "../components/navigation";
 
 type loginFields = {
   email: string;
@@ -17,14 +15,9 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<loginFields>();
-  const { data: session } = useSession();
+  const { status } = useSession();
 
-  if (!session) {
-    console.log("No session exists");
-  }
-
-  if (session) {
-    console.log("Session exists");
+  if (status === "authenticated") {
     void router.push("/protectedLogin");
   }
 
@@ -35,7 +28,6 @@ const Login = () => {
       redirect: false,
       email: data.email,
       password: data.password,
-      callbackUrl: "/",
     });
 
     if (!res) {
@@ -49,7 +41,7 @@ const Login = () => {
     }
 
     console.log("Response Success");
-    void router.push("protectedLogin");
+    // void router.push("protectedLogin");
   };
 
   if (errors.email) {
