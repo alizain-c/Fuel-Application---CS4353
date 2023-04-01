@@ -1,6 +1,7 @@
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
-import Navigation from "../components/navigation";
+
+import { api } from "../utils/api";
 
 type loginFields = {
   username_email: string;
@@ -15,9 +16,19 @@ const Register = () => {
     watch,
     formState: { errors },
   } = useForm<loginFields>();
+
+  const { mutate } = api.user.create.useMutation();
+
   const onSubmit: SubmitHandler<loginFields> = (data, event) => {
     event?.preventDefault();
-    console.log(data);
+    try {
+      mutate({
+        email: data.username_email,
+        password: data.password,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (errors.username_email) {
