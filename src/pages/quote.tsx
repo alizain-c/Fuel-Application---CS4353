@@ -4,8 +4,8 @@ import DatePicker from "react-datepicker";
 import { useEffect, useState } from "react";
 import Navigation from "../components/navigation";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import quotes from "../server/hist"
+import router from "next/router";
+import quotes from "../server/hist";
 
 type QuoteFields = {
   gallonsRequested: number;
@@ -22,6 +22,11 @@ const Quote = () => {
     formState: { errors },
   } = useForm<QuoteFields>();
   const [deliveryDate, setDeliveryDate] = useState(new Date());
+  const { status } = useSession();
+
+  if (status === "unauthenticated") {
+    void router.push("/login");
+  }
 
   const onSubmit: SubmitHandler<QuoteFields> = (data, event) => {
     event?.preventDefault();
@@ -32,8 +37,8 @@ const Quote = () => {
       deliveryDate: "example",
       suggestedPrice: data.suggestedPrice,
       totalAmountDue: data.totalAmountDue,
-    })
-    console.log(quotes[quotes.length-1]);
+    });
+    console.log(quotes[quotes.length - 1]);
   };
 
   return (
@@ -95,7 +100,7 @@ const Quote = () => {
                 <div className="mt-1">
                   <DatePicker
                     selected={deliveryDate}
-                    onChange={(date) => setDeliveryDate(date as Date)}
+                    onChange={(date: Date) => setDeliveryDate(date)}
                     className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
                   />
                 </div>
