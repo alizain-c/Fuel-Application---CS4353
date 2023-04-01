@@ -1,7 +1,9 @@
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
 
 import { api } from "../utils/api";
+import { useState } from "react";
 
 type loginFields = {
   username_email: string;
@@ -10,25 +12,32 @@ type loginFields = {
 };
 
 const Register = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<loginFields>();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { mutate } = api.user.create.useMutation();
+  const { mutate } = api.user.create.useMutation({
+    onSuccess: (data) => {
+      console.log(data);
+      void router.push("/login");
+    },
+    onError: (error) => {
+      setErrorMessage(error.message);
+    },
+  });
 
   const onSubmit: SubmitHandler<loginFields> = (data, event) => {
     event?.preventDefault();
-    try {
-      mutate({
-        email: data.username_email,
-        password: data.password,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    setErrorMessage(null);
+    mutate({
+      email: data.username_email,
+      password: data.password,
+    });
   };
 
   if (errors.username_email) {
@@ -136,6 +145,11 @@ const Register = () => {
                     {errors.confirm_password && (
                       <p className="text-red-500">
                         {errors.confirm_password.message}
+                      </p>
+                    )}
+                    {errorMessage && (
+                      <p className="mt-5 text-center text-red-500">
+                        {errorMessage}
                       </p>
                     )}
                   </div>
