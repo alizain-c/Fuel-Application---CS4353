@@ -1,7 +1,8 @@
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import router from "next/router";
+import { useState } from "react";
 
 type loginFields = {
   email: string;
@@ -9,12 +10,12 @@ type loginFields = {
 };
 
 const Login = () => {
-  const router = useRouter();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<loginFields>();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { status } = useSession();
 
   if (status === "authenticated") {
@@ -31,17 +32,17 @@ const Login = () => {
     });
 
     if (!res) {
-      console.log("Failed Response");
+      setErrorMessage("Something went wrong");
       return;
     }
 
-    if (res.error) {
-      console.log(`Response Error: ${res.error}`);
+    if (res.error === "CredentialsSignin") {
+      setErrorMessage("Invalid email or password");
       return;
     }
 
     console.log("Response Success");
-    // void router.push("protectedLogin");
+    void router.push("protectedLogin");
   };
 
   if (errors.email) {
@@ -105,6 +106,11 @@ const Login = () => {
                     />
                   </div>
                 </div>
+                {errorMessage && (
+                  <p className="mt-5 text-center text-red-500">
+                    {errorMessage}
+                  </p>
+                )}
               </div>
               <div className="flex items-center justify-between"></div>
               <div>
