@@ -20,14 +20,14 @@ datasource db {
 //   updatedAt DateTime @updatedAt
 // }
 
-model User {
+model Users {
   id          String        @id @default(cuid())
-  name        String
+  name        String?
   email       String        @unique
-  address     String
-  city        String
-  state       String
-  zip         String
+  address     String?
+  city        String?
+  state       String?
+  zip         String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   Credentials Credentials[]
@@ -36,7 +36,7 @@ model User {
 
 model Credentials {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user      Users    @relation(fields: [userId], references: [id])
   userId    String
   password  String
   createdAt DateTime @default(now())
@@ -45,7 +45,7 @@ model Credentials {
 
 model Quotes {
   id       String   @id @default(cuid())
-  user     User     @relation(fields: [userId], references: [id])
+  user     Users    @relation(fields: [userId], references: [id])
   userId   String
   gallons  Float
   address  String
