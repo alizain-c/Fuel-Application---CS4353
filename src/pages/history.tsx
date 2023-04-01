@@ -1,8 +1,8 @@
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { useTable, useSortBy, Column } from "react-table";
 import rawData from "../server/hist";
+import { useSession } from "next-auth/react";
+import router from "next/router";
 
 type Data = {
   gallonsRequested: number;
@@ -48,6 +48,11 @@ const columns: Column[] = [
 ];
 
 const History = () => {
+  const { status } = useSession();
+
+  if (status === "unauthenticated") {
+    void router.push("/login");
+  }
 
   const Table: React.FC<TableProps> = ({ columns, data }) => {
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
