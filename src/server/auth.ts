@@ -2,20 +2,13 @@ import type { GetServerSidePropsContext } from "next";
 import {
   getServerSession,
   type NextAuthOptions,
-  type DefaultSession,
+  // type DefaultSession,
 } from "next-auth";
 import { getToken } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
-// import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../env/server.mjs";
-// import { prisma } from "./db";
-
-// EXAMPLE HARD-CODED DATABASE:
-const example = {
-  id: "1",
-  email: "test@test.com",
-  password: "123",
-};
+import { prisma } from "./db";
+import { verify } from "argon2";
 
 /**
  * Module augmentation for `next-auth` types
@@ -63,27 +56,44 @@ export const authOptions: NextAuthOptions = {
         },
       },
 
-      authorize: (credentials) => {
+      authorize: async (credentials) => {
         try {
           if (!credentials) {
             throw Error("Missing email and password");
           }
 
-          const user = example;
+          const user = await prisma.users.findFirst({
+            where: {
+              email: credentials.email,
+            },
+          });
 
-          if (!user || !user?.password) {
-            throw Error("Invalid email or password.");
+          if (!user) {
+            return null;
           }
 
-          const isValidEmail = credentials.email === user.email;
-          const isValidPassword = credentials.password === user.password;
+          const creds = await prisma.credentials.findFirst({
+            where: {
+              userId: user.id,
+            },
+          });
 
-          if (!isValidPassword || !isValidEmail) {
+          if (!creds) {
+            return null;
+          }
+
+          const isValidPassword = await verify(
+            creds.password,
+            credentials.password
+          );
+
+          if (!isValidPassword) {
             throw Error("Invalid email or password.");
           }
 
           return {
             id: user.id,
+            name: user.name,
             email: user.email,
           };
         } catch (error) {
@@ -95,7 +105,6 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 1 * 1 * 60 * 60,
   },
   secret: env.NEXTAUTH_SECRET,
 };
