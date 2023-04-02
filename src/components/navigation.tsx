@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 
 const Navigation = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   return (
     <header className="flex items-center justify-between bg-neutral-900 py-4 px-8">
@@ -14,20 +13,22 @@ const Navigation = () => {
       </Link>
       <nav>
         <ul className="flex space-x-7">
-          <li>
-            <span className="border-r-2 pr-7 italic text-amber-500">
-              {session?.user?.email}
-            </span>
-          </li>
-          {session ? (
-            <li>
-              <p
-                className="font-bold text-amber-500 transition duration-300 hover:cursor-pointer hover:text-white"
-                onClick={() => signOut()}
-              >
-                Sign <span className="text-white">Out</span>
-              </p>
-            </li>
+          {status === "authenticated" ? (
+            <>
+              <li>
+                <span className="border-r-2 pr-7 font-bold text-amber-500">
+                  {session?.user?.name ?? "Name"}
+                </span>
+              </li>
+              <li>
+                <p
+                  className="font-bold text-amber-500 transition duration-300 hover:cursor-pointer hover:text-white"
+                  onClick={() => signOut()}
+                >
+                  Sign <span className="text-white">Out</span>
+                </p>
+              </li>
+            </>
           ) : (
             <>
               <li>
