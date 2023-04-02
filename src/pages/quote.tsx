@@ -29,6 +29,7 @@ const Quote = () => {
 
   const { mutate } = api.quote.create.useMutation({
     onSuccess: (data) => {
+      console.log(data);
       console.log("Quote Successfully created!");
     },
     onError: (error) => {
@@ -44,7 +45,18 @@ const Quote = () => {
 
   const onSubmit: SubmitHandler<QuoteFields> = (data, event) => {
     event?.preventDefault();
-    console.log(data);
+
+    const numGal: number = +data.gallonsRequested;
+    const numSugPrice: number = +data.suggestedPrice; 
+    const numtotAmtDue: number = +data.totalAmountDue;
+
+    mutate({
+      gallons: numGal,
+      address: data.deliveryAddress,
+      deliveryDate: deliveryDate,
+      suggestedPrice: numSugPrice,
+      totalAmountDue: numtotAmtDue,    
+    });
     quotes.push({
       gallonsRequested: data.gallonsRequested,
       deliveryAddress: data.deliveryAddress,
@@ -112,6 +124,7 @@ const Quote = () => {
                   Delivery Date
                 </label>
                 <div className="mt-1">
+
                   <DatePicker
                     selected={deliveryDate}
                     onChange={(date: Date) => setDeliveryDate(date)}

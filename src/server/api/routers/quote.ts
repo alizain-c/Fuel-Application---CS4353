@@ -35,7 +35,7 @@ export const quoteRouter = createTRPCRouter({
       z.object({
         gallons: z.number(),
         address: z.string(),
-        deliveryDate: z.string(),
+        deliveryDate: z.date(),
         suggestedPrice: z.number(),
         totalAmountDue: z.number(),
       })
