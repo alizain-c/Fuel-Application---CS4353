@@ -40,8 +40,38 @@ export const userRouter = createTRPCRouter({
         }
       }
     }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        email: z.string(),
+        name: z.string().optional(),
+        address: z.string().optional(),
+        city: z.string().optional(),
+        state: z.string().optional(),
+        zip: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const user = await ctx.prisma.users.update({
+          where: {
+            email: input.email,
+          },
+          data: {
+            name: input.name,
+            address: input.address,
+            city: input.city,
+            state: input.state,
+            zip: input.zip,
+          },
+        });
 
-  // getSecretMessage: protectedProcedure.query(() => {
-  //   return "you can now see this secret message!";
-  // }),
+        return user;
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong.",
+        });
+      }
+    }),
 });
