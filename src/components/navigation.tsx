@@ -6,11 +6,19 @@ const Navigation = () => {
 
   return (
     <header className="flex items-center justify-between bg-neutral-900 py-4 px-8">
-      <Link href="/">
-        <div className="text-2xl font-bold text-white">
-          Open<span className="text-amber-600">Fuel</span>
-        </div>
-      </Link>
+      {status === "authenticated" ? (
+        <Link href="/protectedLogin">
+          <div className="text-2xl font-bold text-white">
+            Open<span className="text-amber-600">Fuel</span>
+          </div>
+        </Link>
+      ) : (
+        <Link href="/">
+          <div className="text-2xl font-bold text-white">
+            Open<span className="text-amber-600">Fuel</span>
+          </div>
+        </Link>
+      )}
       <nav>
         <ul className="flex space-x-7">
           {status === "authenticated" ? (
