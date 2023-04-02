@@ -7,6 +7,8 @@ import { useSession } from "next-auth/react";
 import router from "next/router";
 import quotes from "../server/hist";
 
+import { api } from "../utils/api";
+
 type QuoteFields = {
   gallonsRequested: number;
   deliveryAddress: string;
@@ -22,7 +24,19 @@ const Quote = () => {
     formState: { errors },
   } = useForm<QuoteFields>();
   const [deliveryDate, setDeliveryDate] = useState(new Date());
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { status } = useSession();
+
+  const { mutate } = api.quote.create.useMutation({
+    onSuccess: (data) => {
+      console.log("Quote Successfully created!");
+    },
+    onError: (error) => {
+      setErrorMessage(error.message);
+    },
+  });
+
+  const { data } = api.quote.getAll.useQuery();
 
   if (status === "unauthenticated") {
     void router.push("/login");

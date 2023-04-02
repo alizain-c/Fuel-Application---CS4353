@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import router from "next/router";
 import profile from "../server/profile";
+import { api } from "../utils/api";
 
 export type profileFields = {
   fullName: string;
@@ -19,6 +20,16 @@ const ProfileManagement = () => {
   const [selectedState, setSelectedState] = useState("");
   const [isVisible, setIsVisible] = useState(true);
   const { status } = useSession();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const { mutate } = api.user.update.useMutation({
+    onSuccess: (data) => {
+      console.log("Data Successfully Saved");
+    },
+    onError: (error) => {
+      setErrorMessage(error.message);
+    },
+  });
 
   if (status === "unauthenticated") {
     void router.push("/login");
