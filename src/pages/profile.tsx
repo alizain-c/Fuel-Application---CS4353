@@ -18,7 +18,6 @@ export type profileFields = {
 const ProfileManagement = () => {
   const { register, handleSubmit } = useForm<profileFields>();
   const [selectedState, setSelectedState] = useState("");
-  const [isVisible, setIsVisible] = useState(true);
   const { data: session, status } = useSession();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -44,7 +43,8 @@ const ProfileManagement = () => {
   };
   // const lastProfile =
   //   profile.length > 0 ? profile[profile.length - 1] : defaultProfile;
-  const {userData} = api.user.getUser.useQuery();
+  const {data: userData} = api.user.getUser.useQuery();
+  const [isVisible, setIsVisible] = useState(true);
 
   const onSubmit: SubmitHandler<profileFields> = (data, event) => {
     event?.preventDefault();
@@ -201,7 +201,7 @@ const ProfileManagement = () => {
                         Full Name:
                       </p>
                       <p className="text-neutral-600">
-                        {session?.user?.name}
+                        {userData?.name}
                       </p>
                     </div>
                     <div className="mt-2 flex items-center">
@@ -228,7 +228,7 @@ const ProfileManagement = () => {
                       <p className="w-32 font-medium text-neutral-800">
                         State:
                       </p>
-                      <p className="text-neutral-600">{selectedState}</p>
+                      <p className="text-neutral-600">{userData?.state}</p>
                     </div>
                     <div className="mt-2 flex items-center">
                       <p className="w-32 font-medium text-neutral-800">
