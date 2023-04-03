@@ -41,33 +41,46 @@ const ProfileManagement = () => {
     city: "",
     zipcode: "",
   };
-  // const lastProfile =
-  //   profile.length > 0 ? profile[profile.length - 1] : defaultProfile;
-  const {data: userData} = api.user.getUser.useQuery();
+
+  const {data: userData, isLoading } = api.user.getUser.useQuery();
   const [isVisible, setIsVisible] = useState(true);
+  const [profileInfo, setProfileInfo] = useState<profileFields | null>(null);
+
 
   const onSubmit: SubmitHandler<profileFields> = (data, event) => {
     event?.preventDefault();
-    // console.log({ ...data, state: selectedState });
-    // profile.push(data);
-    // console.log(profile[profile.length - 1]);
-    // console.log(profile);
     setIsVisible(false);
+    setIsEditMode(false);
+  
+    const updatedProfile: profileFields = {
+      fullName: data.fullName,
+      address1: data.address1,
+      address2: data.address2,
+      city: data.city,
+      zipcode: data.zipcode,
+    };
+  
+    setProfileInfo(updatedProfile); // Update the profileInfo state
+  
     mutate({
-      email: session?.user?.email, 
+      email: session?.user?.email ?? "",
       name: data.fullName,
       address: data.address1,
       city: data.city,
-      state: selectedState, 
+      state: selectedState,
       zip: data.zipcode,
     });
-    console.log(session)
-    console.log(userData)
+  
+    console.log(session);
+    console.log(userData);
   };
+  
 
   const setNewValue = (value: string) => {
     setSelectedState(value);
   };
+
+  const [isEditMode, setIsEditMode] = useState(false);
 
   return (
     <div>
@@ -82,7 +95,7 @@ const ProfileManagement = () => {
             </h2>
           </div>
           <div className="mt-8">
-            {isVisible && (
+            {!userData || isEditMode || (!userData.name && !userData.address && !userData.city && !userData.state && !userData.zip) ? (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
                 <div>
                   <div>
@@ -188,8 +201,7 @@ const ProfileManagement = () => {
                   </button>
                 </div>
               </form>
-            )}
-            {!isVisible && (
+            ) : (
               <div className="mt-8">
                 <div className="rounded-md bg-neutral-200 p-4">
                   <h3 className="text-center text-xl font-bold text-neutral-900">
@@ -201,7 +213,7 @@ const ProfileManagement = () => {
                         Full Name:
                       </p>
                       <p className="text-neutral-600">
-                        {userData?.name}
+                      {profileInfo?.fullName || userData?.name}
                       </p>
                     </div>
                     <div className="mt-2 flex items-center">
@@ -209,7 +221,7 @@ const ProfileManagement = () => {
                         Address 1:
                       </p>
                       <p className="text-neutral-600">
-                        {userData?.address}
+                      {profileInfo?.address1 || userData?.address}
                       </p>
                     </div>
                     <div className="mt-2 flex items-center">
@@ -222,23 +234,23 @@ const ProfileManagement = () => {
                     </div>
                     <div className="mt-2 flex items-center">
                       <p className="w-32 font-medium text-neutral-800">City:</p>
-                      <p className="text-neutral-600">{userData?.city}</p>
+                      <p className="text-neutral-600">{profileInfo?.city || userData?.city}</p>
                     </div>
                     <div className="mt-2 flex items-center">
                       <p className="w-32 font-medium text-neutral-800">
                         State:
                       </p>
-                      <p className="text-neutral-600">{userData?.state}</p>
+                      <p className="text-neutral-600">{selectedState || userData?.state}</p>
                     </div>
                     <div className="mt-2 flex items-center">
                       <p className="w-32 font-medium text-neutral-800">
                         Zipcode:
                       </p>
-                      <p className="text-neutral-600">{userData?.zip}</p>
+                      <p className="text-neutral-600">{profileInfo?.zipcode || userData?.zip}</p>
                     </div>
                   </div>
                   <button
-                    onClick={() => setIsVisible(true)}
+                    onClick={() => setIsEditMode(true)}
                     className="mt-4 flex w-full justify-center rounded-md border border-transparent bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2"
                   >
                     Edit Profile
