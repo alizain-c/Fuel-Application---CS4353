@@ -6,6 +6,30 @@ import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
 
 export const userRouter = createTRPCRouter({
+  getUser: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const userEmail = ctx.session?.user?.email;
+
+      if (!userEmail)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong.",
+        });
+
+      const userData = await ctx.prisma.users.findFirst({
+        where: {
+          email: userEmail,
+        },
+      });
+
+      return userData;
+    } catch (error) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong.",
+      });
+    }
+  }),
   create: publicProcedure
     .input(z.object({ email: z.string(), password: z.string() }))
     .mutation(async ({ ctx, input }) => {

@@ -19,7 +19,7 @@ const ProfileManagement = () => {
   const { register, handleSubmit } = useForm<profileFields>();
   const [selectedState, setSelectedState] = useState("");
   const [isVisible, setIsVisible] = useState(true);
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { mutate } = api.user.update.useMutation({
@@ -42,16 +42,27 @@ const ProfileManagement = () => {
     city: "",
     zipcode: "",
   };
-  const lastProfile =
-    profile.length > 0 ? profile[profile.length - 1] : defaultProfile;
+  // const lastProfile =
+  //   profile.length > 0 ? profile[profile.length - 1] : defaultProfile;
+  const {userData} = api.user.getUser.useQuery();
 
   const onSubmit: SubmitHandler<profileFields> = (data, event) => {
     event?.preventDefault();
-    console.log({ ...data, state: selectedState });
-    profile.push(data);
-    console.log(profile[profile.length - 1]);
-    console.log(profile);
+    // console.log({ ...data, state: selectedState });
+    // profile.push(data);
+    // console.log(profile[profile.length - 1]);
+    // console.log(profile);
     setIsVisible(false);
+    mutate({
+      email: session?.user?.email, 
+      name: data.fullName,
+      address: data.address1,
+      city: data.city,
+      state: selectedState, 
+      zip: data.zipcode,
+    });
+    console.log(session)
+    console.log(userData)
   };
 
   const setNewValue = (value: string) => {
@@ -190,7 +201,7 @@ const ProfileManagement = () => {
                         Full Name:
                       </p>
                       <p className="text-neutral-600">
-                        {lastProfile?.fullName}
+                        {session?.user?.name}
                       </p>
                     </div>
                     <div className="mt-2 flex items-center">
@@ -198,7 +209,7 @@ const ProfileManagement = () => {
                         Address 1:
                       </p>
                       <p className="text-neutral-600">
-                        {lastProfile?.address1}
+                        {userData?.address}
                       </p>
                     </div>
                     <div className="mt-2 flex items-center">
@@ -206,12 +217,12 @@ const ProfileManagement = () => {
                         Address 2:
                       </p>
                       <p className="text-neutral-600">
-                        {lastProfile?.address2}
+                        {}
                       </p>
                     </div>
                     <div className="mt-2 flex items-center">
                       <p className="w-32 font-medium text-neutral-800">City:</p>
-                      <p className="text-neutral-600">{lastProfile?.city}</p>
+                      <p className="text-neutral-600">{userData?.city}</p>
                     </div>
                     <div className="mt-2 flex items-center">
                       <p className="w-32 font-medium text-neutral-800">
@@ -223,7 +234,7 @@ const ProfileManagement = () => {
                       <p className="w-32 font-medium text-neutral-800">
                         Zipcode:
                       </p>
-                      <p className="text-neutral-600">{lastProfile?.zipcode}</p>
+                      <p className="text-neutral-600">{userData?.zip}</p>
                     </div>
                   </div>
                   <button
