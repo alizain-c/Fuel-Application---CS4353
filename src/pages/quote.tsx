@@ -2,11 +2,11 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import { useState } from "react";
-import Navigation from "../components/navigation";
 import { useSession } from "next-auth/react";
 import router from "next/router";
 
 import { api } from "../utils/api";
+import { toast } from "sonner";
 
 type QuoteFields = {
   gallonsRequested: number;
@@ -20,19 +20,18 @@ const Quote = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {},
   } = useForm<QuoteFields>();
   const [deliveryDate, setDeliveryDate] = useState(new Date());
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { status } = useSession();
 
   const { mutate } = api.quote.create.useMutation({
     onSuccess: (data) => {
       console.log(data);
-      console.log("Quote Successfully created!");
+      toast.success("Quote Successfully created!");
     },
     onError: (error) => {
-      setErrorMessage(error.message);
+      toast.error(error.message);
     },
   });
 
@@ -100,6 +99,7 @@ const Quote = () => {
                   <input
                     id="deliveryAddress"
                     type="text"
+                    required
                     {...register("deliveryAddress")}
                     className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
                   />
@@ -107,10 +107,10 @@ const Quote = () => {
               </div>
               <select
                 id="state"
+                required
                 {...register("state")}
                 className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
               >
-                <option value="">Select a state</option>
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
                 <option value="AZ">Arizona</option>
@@ -173,6 +173,7 @@ const Quote = () => {
                   <input
                     id="zipCode"
                     type="number"
+                    required
                     {...register("zipCode")}
                     className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
                   />
@@ -187,6 +188,7 @@ const Quote = () => {
                 </label>
                 <div className="mt-1">
                   <DatePicker
+                    required
                     selected={deliveryDate}
                     onChange={(date: Date) => setDeliveryDate(date)}
                     className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
