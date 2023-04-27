@@ -67,10 +67,25 @@ class Price {
     return this._suggestedPrice;
   }
 
-  public calculatePrice(): number {
+  public calculatePrice(debug?: boolean): number {
     this._total = this._suggestedPrice * this._gallonsRequested;
 
+    if (debug) {
+      this._debug();
+    }
+
     return this._total;
+  }
+
+  private _debug(): void {
+    console.log(`Price per gallon: ${this._pricePerGallon}`);
+    console.log(`Location factor: ${this._locationFactor}`);
+    console.log(`Rate history factor: ${this._rateHistoryFactor}`);
+    console.log(`Gallons requested factor: ${this._gallonsRequestedFactor}`);
+    console.log(`Company profit factor: ${this._companyProfitFactor}`);
+    console.log(`Margin: ${this._margin}`);
+    console.log(`Suggested price: ${this._suggestedPrice}`);
+    console.log(`Total: ${this._total}`);
   }
 }
 
