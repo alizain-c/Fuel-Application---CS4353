@@ -20,6 +20,7 @@ class Price {
     this._calculateRateHistoryFactor(history);
     this._calculateGallonsRequestedFactor();
     this._calculateMargin();
+    this._calculateSuggestedPrice();
   }
 
   private _calculateLocationFactor(): void {
@@ -58,8 +59,15 @@ class Price {
         this._companyProfitFactor);
   }
 
-  public calculatePrice(): number {
+  private _calculateSuggestedPrice(): void {
     this._suggestedPrice = this._pricePerGallon + this._margin;
+  }
+
+  public get suggestedPrice(): number {
+    return this._suggestedPrice;
+  }
+
+  public calculatePrice(): number {
     this._total = this._suggestedPrice * this._gallonsRequested;
 
     return this._total;
