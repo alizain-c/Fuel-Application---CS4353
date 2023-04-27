@@ -1,11 +1,10 @@
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Navigation from "../components/navigation";
 import { useSession } from "next-auth/react";
 import router from "next/router";
-import quotes from "../server/hist";
 
 import { api } from "../utils/api";
 
@@ -13,8 +12,8 @@ type QuoteFields = {
   gallonsRequested: number;
   deliveryAddress: string;
   deliveryDate: Date;
-  suggestedPrice: number;
-  totalAmountDue: number;
+  state: string;
+  zipCode: string;
 };
 
 const Quote = () => {
@@ -37,7 +36,7 @@ const Quote = () => {
     },
   });
 
-  const { data } = api.quote.getAll.useQuery();
+  // const { data } = api.quote.getAll.useQuery();
 
   if (status === "unauthenticated") {
     void router.push("/login");
@@ -47,24 +46,16 @@ const Quote = () => {
     event?.preventDefault();
 
     const numGal: number = +data.gallonsRequested;
-    const numSugPrice: number = +data.suggestedPrice; 
-    const numtotAmtDue: number = +data.totalAmountDue;
+    const stateId: string = data.state;
+    const zipCode: string = data.zipCode;
 
     mutate({
       gallons: numGal,
       address: data.deliveryAddress,
+      state: stateId,
       deliveryDate: deliveryDate,
-      suggestedPrice: numSugPrice,
-      totalAmountDue: numtotAmtDue,    
+      zip: zipCode,
     });
-    quotes.push({
-      gallonsRequested: data.gallonsRequested,
-      deliveryAddress: data.deliveryAddress,
-      deliveryDate: "example",
-      suggestedPrice: data.suggestedPrice,
-      totalAmountDue: data.totalAmountDue,
-    });
-    console.log(quotes[quotes.length - 1]);
   };
 
   return (
@@ -116,6 +107,79 @@ const Quote = () => {
                   />
                 </div>
               </div>
+              <select
+                id="state"
+                {...register("state")}
+                className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
+              >
+                <option value="">Select a state</option>
+                <option value="AL">Alabama</option>
+                <option value="AK">Alaska</option>
+                <option value="AZ">Arizona</option>
+                <option value="AR">Arkansas</option>
+                <option value="CA">California</option>
+                <option value="CO">Colorado</option>
+                <option value="CT">Connecticut</option>
+                <option value="DE">Delaware</option>
+                <option value="FL">Florida</option>
+                <option value="GA">Georgia</option>
+                <option value="HI">Hawaii</option>
+                <option value="ID">Idaho</option>
+                <option value="IL">Illinois</option>
+                <option value="IN">Indiana</option>
+                <option value="IA">Iowa</option>
+                <option value="KS">Kansas</option>
+                <option value="KY">Kentucky</option>
+                <option value="LA">Louisiana</option>
+                <option value="ME">Maine</option>
+                <option value="MD">Maryland</option>
+                <option value="MA">Massachusetts</option>
+                <option value="MI">Michigan</option>
+                <option value="MN">Minnesota</option>
+                <option value="MS">Mississippi</option>
+                <option value="MO">Missouri</option>
+                <option value="MT">Montana</option>
+                <option value="NE">Nebraska</option>
+                <option value="NV">Nevada</option>
+                <option value="NH">New Hampshire</option>
+                <option value="NJ">New Jersey</option>
+                <option value="NM">New Mexico</option>
+                <option value="NY">New York</option>
+                <option value="NC">North Carolina</option>
+                <option value="ND">North Dakota</option>
+                <option value="OH">Ohio</option>
+                <option value="OK">Oklahoma</option>
+                <option value="OR">Oregon</option>
+                <option value="PA">Pennsylvania</option>
+                <option value="RI">Rhode Island</option>
+                <option value="SC">South Carolina</option>
+                <option value="SD">South Dakota</option>
+                <option value="TN">Tennessee</option>
+                <option value="TX">Texas</option>
+                <option value="UT">Utah</option>
+                <option value="VT">Vermont</option>
+                <option value="VA">Virginia</option>
+                <option value="WA">Washington</option>
+                <option value="WV">West Virginia</option>
+                <option value="WI">Wisconsin</option>
+                <option value="WY">Wyoming</option>
+              </select>
+              <div>
+                <label
+                  htmlFor="zipCode"
+                  className="block text-sm font-medium text-gray-100"
+                >
+                  Zip Code
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="zipCode"
+                    type="number"
+                    {...register("zipCode")}
+                    className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
+                  />
+                </div>
+              </div>
               <div>
                 <label
                   htmlFor="deliveryDate"
@@ -124,47 +188,9 @@ const Quote = () => {
                   Delivery Date
                 </label>
                 <div className="mt-1">
-
                   <DatePicker
                     selected={deliveryDate}
                     onChange={(date: Date) => setDeliveryDate(date)}
-                    className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
-                  />
-                </div>
-              </div>
-              <div>
-                <label
-                  htmlFor="suggestedPrice"
-                  className="block text-sm font-medium text-gray-100"
-                >
-                  Suggested Price/Gallon
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="suggestedPrice"
-                    type="number"
-                    {...register("suggestedPrice", {
-                      required: true,
-                    })}
-                    className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
-                  />
-                </div>
-              </div>
-              <div>
-                <label
-                  htmlFor="totalAmountDue"
-                  className="block text-sm font-medium text-gray-100"
-                >
-                  Total Amount Due
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="totalAmountDue"
-                    type="number"
-                    required
-                    {...register("totalAmountDue", {
-                      required: true,
-                    })}
                     className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
                   />
                 </div>
