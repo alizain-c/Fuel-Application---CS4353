@@ -36,8 +36,6 @@ const Quote = () => {
     },
   });
 
-  // const { data } = api.quote.getAll.useQuery();
-
   if (status === "unauthenticated") {
     void router.push("/login");
   }
