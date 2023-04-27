@@ -2,7 +2,7 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { signIn, useSession } from "next-auth/react";
 import router from "next/router";
-import { useState } from "react";
+import { toast } from "sonner";
 
 type loginFields = {
   email: string;
@@ -13,9 +13,8 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {},
   } = useForm<loginFields>();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { status } = useSession();
 
   if (status === "authenticated") {
@@ -32,26 +31,18 @@ const Login = () => {
     });
 
     if (!res) {
-      setErrorMessage("Something went wrong");
+      toast.error("Something went wrong");
       return;
     }
 
     if (res.error === "CredentialsSignin") {
-      setErrorMessage("Invalid email or password");
+      toast.error("Invalid email or password");
       return;
     }
 
-    console.log("Response Success");
+    toast.success("Successfully logged in!");
     void router.push("protectedLogin");
   };
-
-  if (errors.email) {
-    console.log("Email validation error");
-  }
-
-  if (errors.password) {
-    console.log("Password validation error");
-  }
 
   return (
     <div>
@@ -100,19 +91,14 @@ const Login = () => {
                     <input
                       id="password"
                       type="password"
+                      required
                       autoComplete="current-password"
                       {...register("password", { required: true })}
                       className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
                     />
                   </div>
                 </div>
-                {errorMessage && (
-                  <p className="mt-5 text-center text-red-500">
-                    {errorMessage}
-                  </p>
-                )}
               </div>
-              <div className="flex items-center justify-between"></div>
               <div>
                 <button
                   type="submit"
