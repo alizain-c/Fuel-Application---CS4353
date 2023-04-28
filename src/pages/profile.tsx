@@ -6,11 +6,11 @@ import { useSession } from "next-auth/react";
 import router from "next/router";
 import profile from "../server/profile";
 import { api } from "../utils/api";
+import { toast } from "sonner";
 
 export type profileFields = {
   fullName: string;
-  address1: string;
-  address2: string;
+  address: string;
   city: string;
   zipcode: string;
 };
@@ -19,15 +19,14 @@ const ProfileManagement = () => {
   const { register, handleSubmit } = useForm<profileFields>();
   const [selectedState, setSelectedState] = useState("");
   const [isVisible, setIsVisible] = useState(true);
-  const { status } = useSession();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { data: session, status } = useSession();
 
   const { mutate } = api.user.update.useMutation({
-    onSuccess: (data) => {
-      console.log("Data Successfully Saved");
+    onSuccess: () => {
+      toast.success("Data Successfully Saved");
     },
     onError: (error) => {
-      setErrorMessage(error.message);
+      toast.error(error.message);
     },
   });
 
@@ -37,8 +36,7 @@ const ProfileManagement = () => {
 
   const defaultProfile: profileFields = {
     fullName: "",
-    address1: "",
-    address2: "",
+    address: "",
     city: "",
     zipcode: "",
   };
@@ -47,10 +45,17 @@ const ProfileManagement = () => {
 
   const onSubmit: SubmitHandler<profileFields> = (data, event) => {
     event?.preventDefault();
-    console.log({ ...data, state: selectedState });
+    mutate({
+      email: session?.user?.email as string,
+      name: data.fullName,
+      address: data.address,
+      city: data.city,
+      state: selectedState,
+      zip: data.zipcode,
+    });
+
     profile.push(data);
-    console.log(profile[profile.length - 1]);
-    console.log(profile);
+
     setIsVisible(false);
   };
 
@@ -92,29 +97,16 @@ const ProfileManagement = () => {
                   </div>
                   <div className="mt-6">
                     <label className="block text-sm font-medium text-gray-100">
-                      Address 1
+                      Address
                     </label>
                     <div className="mt-1">
                       <input
-                        id="address1"
+                        id="address"
                         maxLength={100}
                         required
-                        {...register("address1", {
+                        {...register("address", {
                           required: true,
                         })}
-                        className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-6">
-                    <label className="block text-sm font-medium text-gray-100">
-                      Address 2
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        id="address2"
-                        maxLength={100}
-                        {...register("address2", {})}
                         className="block w-full rounded-md border border-gray-300 bg-neutral-200 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-amber-500 sm:text-sm"
                       />
                     </div>
@@ -195,19 +187,9 @@ const ProfileManagement = () => {
                     </div>
                     <div className="mt-2 flex items-center">
                       <p className="w-32 font-medium text-neutral-800">
-                        Address 1:
+                        Address:
                       </p>
-                      <p className="text-neutral-600">
-                        {lastProfile?.address1}
-                      </p>
-                    </div>
-                    <div className="mt-2 flex items-center">
-                      <p className="w-32 font-medium text-neutral-800">
-                        Address 2:
-                      </p>
-                      <p className="text-neutral-600">
-                        {lastProfile?.address2}
-                      </p>
+                      <p className="text-neutral-600">{lastProfile?.address}</p>
                     </div>
                     <div className="mt-2 flex items-center">
                       <p className="w-32 font-medium text-neutral-800">City:</p>
