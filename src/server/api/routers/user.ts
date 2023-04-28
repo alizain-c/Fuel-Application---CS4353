@@ -7,7 +7,7 @@ import { Prisma } from "@prisma/client";
 
 export const userRouter = createTRPCRouter({
   create: publicProcedure
-    .input(z.object({ email: z.string(), password: z.string() }))
+    .input(z.object({ email: z.string().min(1), password: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       const hashedPassword = await hash(input.password);
 

@@ -46,6 +46,17 @@ const Quote = () => {
     const stateId: string = data.state;
     const zipCode: string = data.zipCode;
 
+    if (numGal < 0) {
+      toast.error("Gallons requested must be greater than 0");
+      return;
+    }
+
+    if (deliveryDate < new Date()) {
+      console.log(deliveryDate);
+      toast.error("Delivery date must be in the future");
+      return;
+    }
+
     mutate({
       gallons: numGal,
       address: data.deliveryAddress,
