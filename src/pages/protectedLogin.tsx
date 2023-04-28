@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import router from "next/router";
 
 const ProtectedLogin: NextPage = () => {
@@ -59,6 +59,7 @@ const ProtectedLogin: NextPage = () => {
               </div>
             </Link>
             <Link
+              onClick={() => signOut()}
               className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href="/"
             >
@@ -69,19 +70,8 @@ const ProtectedLogin: NextPage = () => {
               </div>
             </Link>
           </div>
-          {/* TRPC Stuff: */}
-          {/* <div className="flex flex-col items-center gap-2">
-              <p className="text-2xl text-white">
-                {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-              </p>
-              <AuthShowcase />
-            </div> */}
         </div>
       </main>
-
-      {/* <footer className="py-4 px-8 text-center">
-          <p>&copy; 2023 OpenFuel. All rights reserved.</p>
-        </footer> */}
     </>
   );
 };
