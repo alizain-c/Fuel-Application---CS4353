@@ -16,3 +16,11 @@ test("Create a price quote for out of state", async () => {
 
   expect(total).toBe(2587.5);
 });
+
+test("Price console.log debug", async () => {
+  const price = new Price(1500, "TX", true);
+
+  const total = price.calculatePrice(true);
+
+  expect(total).toBe(2542.5);
+});
