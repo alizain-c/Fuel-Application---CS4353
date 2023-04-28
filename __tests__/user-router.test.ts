@@ -10,7 +10,6 @@ test("Missing password should not be able to create a user", async () => {
 
   const input: inferProcedureInput<AppRouter["user"]["create"]> = {
     email: "",
-    password: "",
   };
 
   await expect(caller.user.create(input)).rejects.toThrowError();
