@@ -36,6 +36,28 @@ test("Get All Quotes, should return empty array", async () => {
   expect(quotes).toHaveLength(0);
 });
 
+test("Should not be able to create quotes with no email", async () => {
+  const ctx = await createInnerTRPCContext({
+    session: {
+      user: {
+        email: null,
+      },
+      expires: "1",
+    },
+  });
+  const caller = appRouter.createCaller(ctx);
+
+  const input: inferProcedureInput<AppRouter["quote"]["create"]> = {
+    gallons: 100,
+    address: "123 Test St",
+    state: "TX",
+    zip: "12345",
+    deliveryDate: new Date(),
+  };
+
+  await expect(caller.quote.create(input)).rejects.toThrowError();
+});
+
 test("Should be able to create a new quote", async () => {
   const ctx = await createInnerTRPCContext({
     session: {
