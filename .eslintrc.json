@@ -7,7 +7,8 @@
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
         "project": "tsconfig.json"
-      }
+      },
+      "excludedFiles": ["**/*.test.ts", "**/*.test.tsx"]
     }
   ],
   "parser": "@typescript-eslint/parser",
