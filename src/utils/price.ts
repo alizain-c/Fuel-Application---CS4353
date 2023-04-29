@@ -4,7 +4,7 @@ class Price {
 
   private _pricePerGallon = 1.5;
   private _locationFactor = 0.04;
-  private _rateHistoryFactor = 0.01;
+  private _rateHistoryFactor = 0.0;
   private _gallonsRequestedFactor = 0.03;
   private _companyProfitFactor = 0.1;
 
